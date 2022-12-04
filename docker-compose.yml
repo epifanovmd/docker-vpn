@@ -1,48 +1,58 @@
 version: "3"
 services:
+#  wireguard:
+#    image: lscr.io/linuxserver/wireguard
+#    container_name: wireguard
+#    cap_add:
+#      - NET_ADMIN
+#      - SYS_MODULE
+#    environment:
+#      - PUID=1000
+#      - PGID=1000
+#      - TZ=Europe/London
+#      - SERVERURL=auto #optional
+#      - SERVERPORT=51820 #optional
+#      - PEERS=20 #optional
+#      - PEERDNS=auto #optional
+#      - INTERNAL_SUBNET=10.13.13.0 #optional
+#      - ALLOWEDIPS=0.0.0.0/0 #optional
+#    volumes:
+#      - ~/wireguard/config:/config
+#      - /lib/modules:/lib/modules
+#    ports:
+#      - 51820:51820/udp
+#    sysctls:
+#      - net.ipv4.conf.all.src_valid_mark=1
+#    restart: unless-stopped
   wireguard:
-    image: lscr.io/linuxserver/wireguard
-    container_name: wireguard
+    environment:
+      # ⚠️ Required:
+      # Change this to your host's public address
+      - WG_HOST=http://79.137.206.71/
+
+      # Optional:
+      - PASSWORD=epifan123321
+      # - WG_PORT=51820
+      # - WG_DEFAULT_ADDRESS=10.8.0.x
+      # - WG_DEFAULT_DNS=1.1.1.1
+      # - WG_MTU=1420
+      # - WG_ALLOWED_IPS=192.168.15.0/24, 10.0.1.0/24
+      # - WG_PRE_UP=echo "Pre Up" > /etc/wireguard/pre-up.txt
+      # - WG_POST_UP=echo "Post Up" > /etc/wireguard/post-up.txt
+      # - WG_PRE_DOWN=echo "Pre Down" > /etc/wireguard/pre-down.txt
+      # - WG_POST_DOWN=echo "Post Down" > /etc/wireguard/post-down.txt
+
+    image: weejewel/wg-easy
+    container_name: wgui
+    volumes:
+      - ~/wireguard/config:/etc/wireguard
+    ports:
+      - "51820:51820/udp"
+      - "51821:51821/tcp"
+    restart: unless-stopped
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/London
-      - SERVERURL=auto #optional
-      - SERVERPORT=51820 #optional
-      - PEERS=20 #optional
-      - PEERDNS=auto #optional
-      - INTERNAL_SUBNET=10.13.13.0 #optional
-      - ALLOWEDIPS=0.0.0.0/0 #optional
-    volumes:
-      - ~/wireguard/config:/config
-      - /lib/modules:/lib/modules
-    ports:
-      - 51820:51820/udp
     sysctls:
+      - net.ipv4.ip_forward=1
       - net.ipv4.conf.all.src_valid_mark=1
-    restart: unless-stopped
-  wg:
-    image: ngoduykhanh/wireguard-ui:latest
-    container_name: wgui
-    cap_add:
-      - NET_ADMIN
-    network_mode: host
-    environment:
-      - SENDGRID_API_KEY
-      - EMAIL_FROM_ADDRESS
-      - EMAIL_FROM_NAME
-      - SESSION_SECRET
-      - WGUI_USERNAME=epifanovmd
-      - WGUI_PASSWORD=epifan123321
-      - WG_CONF_TEMPLATE
-    logging:
-      driver: json-file
-      options:
-        max-size: 50m
-    volumes:
-      - ./db:/app/db
-      - ~/wireguard/config:/etc/wireguard
-    restart: unless-stopped
