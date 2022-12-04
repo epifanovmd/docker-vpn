@@ -44,5 +44,5 @@ services:
         max-size: 50m
     volumes:
       - ./db:/app/db
-      - ~/wireguard/wgui:/etc/wireguard
+      - ~/wireguard/config:/etc/wireguard
     restart: unless-stopped
