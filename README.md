@@ -10,5 +10,8 @@ sudo nano /etc/ssh/sshd_config
 
 +- PasswordAuthentication no --> yes
 
-+ PubkeyAuthentication yes
-+ ChallengeResponseAuthentication no
+++ PubkeyAuthentication yes
+++ ChallengeResponseAuthentication no
+
+
+sudo systemctl reload ssh
